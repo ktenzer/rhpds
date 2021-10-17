@@ -1,0 +1,23 @@
+---
+# tasks file for deploy-ocp4-cluster
+
+- name: Create a OCP Install Directory
+  ansible.builtin.file:
+    path: /tmp/ocp4
+    state: directory
+    mode: '0755'
+
+- name: Create temp Mattermost JSON config from template
+  template:
+    src: templates/install-config.j2
+    dest: /tmp/ocp4/install-config.yaml
+    mode: 0644
+
+- name: Create OCP4 Cluster
+  shell:
+    "openshift-install create cluster --dir=/tmp/ocp4 --log-level=info"
+  register: ocp4out
+
+- name: Print OCP4 Install Output
+  debug: 
+    msg: "{{ocp4out.stdout_lines}}"

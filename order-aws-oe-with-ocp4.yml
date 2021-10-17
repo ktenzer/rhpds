@@ -1,0 +1,21 @@
+---
+- name: Spinup RHPDS AWS Blank Enviornment
+  hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  vars_files: 
+    - vars.yml
+
+  tasks:
+    - name: Order AWS Open Environment
+      import_role:
+        name: order-aws-oe
+
+    - name: Get AWS Credentials
+      import_role:
+        name: get-aws-creds
+
+    - name: Deploy OCP4 Cluster
+      import_role:
+        name: deploy-ocp4-cluster

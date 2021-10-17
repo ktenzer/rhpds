@@ -1,0 +1,11 @@
+rhpdsurl: "https://rhpds.redhat.com"
+catalogitem : 30000000000080
+notes: 'Customer Activity - Proof of Concept provisioned by AnsibleAPI'
+rhpdsorder: '{ "action": "order", "resource": { "href":
+  "https://rhpds.redhat.com/api/v3.0.0/service_templates/30000000000840",
+  "check" : "t",
+  "notes" : " Test 123 ",
+  "expiration" : "7"
+  } }'
+pullSecret:
+sshKey:

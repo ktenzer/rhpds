@@ -1,0 +1,13 @@
+---
+- name: Spinup RHPDS AWS Blank Enviornment
+  hosts: localhost
+  connection: local
+  become: no
+  gather_facts: no
+  vars_files: 
+    - vars.yml
+
+  tasks:
+    - name: Get AWS Service Info
+      import_role:
+        name: get-aws-service-info

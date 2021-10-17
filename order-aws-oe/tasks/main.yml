@@ -1,0 +1,64 @@
+---
+#    - name: 'Preflight Varible check :: rhpdsurl'
+#      fail: msg='Please include the rhpdsurl to the variable "rhpdsurl" or create Custom Crediental for it'
+#      run_once: true
+#      when: 'rhpdsurl is not defined'
+#    - name: 'Preflight Varible check :: rhpdsuser'
+#      fail: msg='Please include the rhpdsuser to the variable "rhpdsuser" or create Custom Crediental for it'
+#      run_once: true
+#      when: 'rhpdsuser is not defined'
+#    - name: 'Preflight Varible check :: rhpdspass'
+#      fail: msg='Please include the rhpdspass to the variable "rhpdspass" or create Custom Crediental for it'
+#      run_once: true
+#      when: 'rhpdspass is not defined'
+#    - name: 'Preflight Varible check :: catalogitem'
+#      fail: msg='Please include the catalogitem to the variable "catalogitem"'
+#      #Example: https://rhpds.redhat.com/api/v3.0.0/service_catalogs/'
+#      run_once: true
+#      when: 'catalogitem is not defined'
+#    - name: 'Preflight Varible check :: rhpdsorder'
+#      fail: msg='Please include the rhpdsorder to the variable "rhpdsorder"'
+       #  Example '{ "action": "order", "resource": { "href":
+       #    "https://rhpds.redhat.com/api/v3.0.0/service_templates/30000000000840",
+       #    "check" : "t",
+       #    "notes" : " {{notes}} "
+       #    } }''
+#      run_once: true
+#      when: 'rhpdsorder is not defined'
+#    - name: Check for Controller Username not blank
+#      debug:
+        #msg: "'{{ lookup('env', 'TOWER_USERNAME') }}'"
+#        msg: "'{{ lookup('env', 'username') }}'"
+#        verbosity: 2
+    #- name: 'Preflight Varible check :: for AWS Creds api'
+    #  block:
+    #   - name: 'Preflight Varible check :: Org'
+    #     fail: msg='Please include the Organization where the creds live to the variable "org"'
+    #     run_once: true
+    #     when: 'org is not defined'
+    #   - name: 'Preflight Varible check :: towercredname'
+    #     fail: msg='Please include the Creds to update or change to the variable "towercredname"'
+    #     run_once: true
+    #     when: 'towercredname is not defined'
+    #  run_once: true
+     #when: 'tower_un != ""'
+
+- name: Request Service Template {{ catalogitem }} from RHPDS
+  uri:
+    url: "{{ rhpdsurl }}/api/v3.0.0/service_catalogs/{{ catalogitem }}/service_templates"
+    user: "{{ rhpdsuser }}"
+    password: "{{ rhpdspass }}"
+    method: POST
+    body: "{{ rhpdsorder }}"
+    body_format: json
+  register: requestinfo
+#- name:
+#  debug:
+#    msg: "{{requestinfo.json.results[0].id}}"
+- name: Set fact
+  set_fact:
+    serviceid: "{{ requestinfo.json.results[0].id }}"
+- name: Show new fact
+  debug:
+    msg: "{{ serviceid }}"
+    verbosity: 2
