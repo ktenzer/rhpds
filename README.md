@@ -27,6 +27,9 @@ Variables that need to be passed in are as follows:
 ### Deploy OpenShift into a existing RHPDS open environment
 ```$ ansible-playbook deploy-ocp4-with-existing-oe.yml -e rhpdsuser=user -e rhpdspass=pass -e serviceid=30000000172923```
 
+### Deploy OpenShift into a existing RHPDS open environment with custimizations
+```$ ansible-playbook deploy-ocp4-with-existing-oe.yml -e rhpdsuser=user -e rhpdspass=pass -e serviceid=30000000172923 -e workerType=c5.metal workerReplicas=3```
+
 ### Destroy OpenShift Cluster
 ```$ ansible-playbook destroy-ocp4.yml```
 
