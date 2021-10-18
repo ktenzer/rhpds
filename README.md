@@ -9,6 +9,7 @@ One of the issues with open environments is you can only get a cookie-cutter OCP
 All playbooks simply import roles. This will allow for adding use cases and reusability. All playbooks share a vars file and you will need to update the vars.yml if you are deploying OpenShift to add pullSecret as well as your sshKey. Other parameters can be overwritten at CLI.
 
 Variables that need to be passed in are as follows:
+
 ```rhpdsuser - your RHPDS username```
 
 ```rhpdspass - your RHPDS password```
