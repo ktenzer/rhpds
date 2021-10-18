@@ -10,7 +10,9 @@ All playbooks simply import roles. This will allow for adding use cases and reus
 
 Variables that need to be passed in are as follows:
 ```rhpdsuser - your RHPDS username```
+
 ```rhpdspass - your RHPDS password```
+
 ```serviceid - serviceid for your RHPDS open environment. Only required if you are re-using existing open environment. Once you deploy an open environment you will get back the serviceid, please save that number or note it if you want to reuse the open environment```
 
 ## Examples
