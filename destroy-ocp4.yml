@@ -8,6 +8,6 @@
     - vars.yml
 
   tasks:
-    - name: Get AWS Service Info
+    - name: Destroy OCP4 Cluster
       import_role:
-        name: get-aws-service-info
+        name: destroy-ocp4-cluster

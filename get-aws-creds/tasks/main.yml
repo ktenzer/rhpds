@@ -1,7 +1,12 @@
 ---
+- name: 'Preflight Varible check :: serviceid'
+  fail: msg='Please include the serviceid variable'
+  run_once: true
+  when: 'serviceid is not defined'
+
 - name: Query Service Request Template for RHPDS Tasks
   uri:
-    url: "{{ rhpdsurl }}/api/v3.0.0/service_requests/{{ hostvars['127.0.0.1']['serviceid'] }}?expand=request_tasks"
+    url: "{{ rhpdsurl }}/api/v3.0.0/service_requests/{{ serviceid }}?expand=request_tasks"
     user: "{{ rhpdsuser }}"
     password: "{{ rhpdspass }}"
     method: GET
@@ -9,17 +14,16 @@
   until: serviceexpanded.json.request_state == "finished"
   retries: 20
   delay: 30
-#- name: Show all output
-#  debug:
-#    msg: "{{serviceexpanded}}"
 
 - name: Debug Task ID
   debug:
     msg: "{{serviceexpanded.json.request_tasks[0].id}}"
     verbosity: 2
+
 - name: Debug Task URI request
   debug:
     msg: "{{serviceexpanded.json.request_tasks[0].href}}"
+
 - name: Query Service Template for (ServiceID)
   uri:
     url: "{{ serviceexpanded.json.request_tasks[0].href }}"
@@ -27,13 +31,12 @@
     password: "{{ rhpdspass }}"
     method: GET
   register: taskinformation
-#- name: Task options
-#  debug:
-#    msg: "{{taskinformation.json.options.dialog}}"
+
 - name: Debug Service ID
   debug:
     msg: "{{taskinformation.json.options.dialog['Service::Service']}}"
     verbosity: 2
+
 - name: Query Service {{taskinformation.json.options.dialog['Service::Service']}} for Custom Attributes)
   uri:
     url: "{{ rhpdsurl }}/api/v3.0.0/services/{{taskinformation.json.options.dialog['Service::Service']}}?attributes=custom_attributes"
@@ -41,6 +44,7 @@
     password: "{{ rhpdspass }}"
     method: GET
   register: moreattributes
+
 - name: Searching project for AWS ACCESS KEY
   vars:
     _query: "[?name ==`AWS_ACCESS_KEY_ID`].value"
@@ -59,11 +63,18 @@
   set_fact:
     domain_temp: "{{ moreattributes.json.custom_attributes|json_query(_query) }}"
 
+- name: Searching project for ec2 region
+  vars:
+    _query: "[?name ==`ec2region`].value"
+  set_fact:
+    ec2_region_temp: "{{ moreattributes.json.custom_attributes|json_query(_query) }}"
+
 - name: Clean up Variables
   set_fact:
     aws_access_key: "{{ aws_access_key_temp[0] | trim }}"
     aws_access_secret: "{{ aws_access_secret_temp[0] | trim }}"
     domain: "{{ domain_temp[0] | trim }}"
+    ec2_region: "{{ ec2_region_temp[0] | trim }}"
 
 - name: Display AWS Key and Secret
   debug:
@@ -71,4 +82,21 @@
     - "AWS ACCESS KEY: '{{aws_access_key}}'"
     - "AWS SECRET KEY: '{{aws_access_secret}}'"
     - "DOMAIN: '{{domain}}'"
+    - "EC2 REGION: '{{ec2_region}}'"
     - "SERVICE ID: '{{ hostvars['127.0.0.1']['serviceid'] }}'"
+
+- name: Set AWS Home Dir
+  set_fact:
+    aws_home: "{{ lookup('env','HOME') }}"
+
+- name: Create AWS Credentials Directory
+  ansible.builtin.file:
+    path: "{{ aws_home}}/.aws"
+    state: directory
+    mode: '0755'
+
+- name: Create AWS Credentials File
+  template:
+    src: templates/aws-credentials.j2
+    dest: "{{ aws_home}}/.aws/credentials"
+    mode: 0644

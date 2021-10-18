@@ -1,5 +1,32 @@
 ---
 # tasks file for deploy-ocp4-cluster
+- name: 'Preflight Varible check :: pullSecret'
+  fail: msg='Please include the pullSecret variable in the vars file'
+  run_once: true
+  when: 'pullSecret is not defined'
+
+- name: 'Preflight Varible check ::sshKey'
+  fail: msg='Please include the public sshKey from your host in the vars file'
+  run_once: true
+  when: 'sshKey is not defined'
+
+- name: 'Preflight command check ::openshift-install'
+  shell: "which openshift-install"
+  register: openshiftInstall
+  ignore_errors: true
+
+- fail:
+    msg: "The openshift-install program is not found! You need to install it first from cloud.redhat.com and make sure it is in your PATH"
+  when: openshiftInstall.rc != 0
+
+- name: 'Preflight command check ::oc'
+  shell: "which oc"
+  register: oc
+  ignore_errors: true
+
+- fail:
+    msg: "The oc program is not found! You need to install it first from cloud.redhat.com and make sure it is in your PATH"
+  when: oc.rc != 0
 
 - name: Create a OCP Install Directory
   ansible.builtin.file:
@@ -7,17 +34,17 @@
     state: directory
     mode: '0755'
 
-- name: Create temp Mattermost JSON config from template
+- name: Create ocp4 install-config.yml
   template:
     src: templates/install-config.j2
     dest: /tmp/ocp4/install-config.yaml
     mode: 0644
 
-- name: Create OCP4 Cluster
+- name: Deploy OCP4 Cluster
   shell:
     "openshift-install create cluster --dir=/tmp/ocp4 --log-level=info"
   register: ocp4out
 
 - name: Print OCP4 Install Output
   debug: 
-    msg: "{{ocp4out.stdout_lines}}"
+    var: ocp4out.stdout_lines

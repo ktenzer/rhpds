@@ -1,11 +1,13 @@
 rhpdsurl: "https://rhpds.redhat.com"
 catalogitem : 30000000000080
-notes: 'Customer Activity - Proof of Concept provisioned by AnsibleAPI'
 rhpdsorder: '{ "action": "order", "resource": { "href":
   "https://rhpds.redhat.com/api/v3.0.0/service_templates/30000000000840",
   "check" : "t",
-  "notes" : " Test 123 ",
+  "notes" : " Customer Activity - Proof of Concept provisioned by AnsibleAPI ",
   "expiration" : "7"
   } }'
-pullSecret:
-sshKey:
+controllerType: m5.xlarge
+workerType: m5.large
+workerReplicas: 2
+pullSecret: ''
+sshKey: ''

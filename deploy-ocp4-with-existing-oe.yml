@@ -10,7 +10,7 @@
   tasks:
     - name: Get AWS Service Info
       import_role:
-        name: get-aws-service-info
+        name: get-aws-creds
 
     - name: Deploy OCP4 Cluster
       import_role:

@@ -1,0 +1,11 @@
+---
+# tasks file for destroy-ocp4-cluster
+
+- name: Destroy OCP4 Cluster
+  shell:
+    "openshift-install destroy cluster --dir=/tmp/ocp4 --log-level=info"
+  register: ocp4out
+
+- name: Print OCP4 Install Output
+  debug: 
+    var: ocp4out.stdout_lines
